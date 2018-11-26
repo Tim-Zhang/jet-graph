@@ -1,4 +1,4 @@
-# my-project2
+# JetCompose Graphs
 
 ## Project setup
 ```

@@ -31,6 +31,19 @@
 </template>
 
 <script>
+import {FetchBinaryURLAsync} from '../lib/binaryXHR'
+import RRDFile from '../lib/RRDFile'
+
+FetchBinaryURLAsync('/Status_Attributes.rrd', function(bf) {
+  console.log(bf.getLength())
+  const rrdData = new RRDFile(bf)
+  console.log(rrdData)
+  console.log(rrdData.getNrDSs())
+  const rra = rrdData.getRRA(0)
+  // const rows = rra.getNrRows()
+  console.log(rra.getElFast(0, 0))
+})
+
 export default {
   name: 'HelloWorld',
   props: {

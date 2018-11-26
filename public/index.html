@@ -5,13 +5,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <title>my-project2</title>
+    <title>jetcompose-graphs</title>
   </head>
   <body>
     <noscript>
-      <strong>We're sorry but my-project2 doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+      <strong>We're sorry but jetcompose-graphs doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
     <div id="app"></div>
-    <!-- built files will be auto injected -->
+    <% if (NODE_ENV == 'production') { %>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@4.2.0-rc.2/dist/echarts.common.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <% } %>
+    <% if (NODE_ENV == 'development') { %>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@4.2.0-rc.2/dist/echarts.common.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <% } %>
   </body>
 </html>
