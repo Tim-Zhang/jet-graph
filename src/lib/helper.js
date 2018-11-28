@@ -14,6 +14,13 @@ export default {
     return `${date} ${time}`
   },
 
+  getRraLabel(rra) {
+    const step = rra.getStep()
+    const rows = rra.getNrRows()
+    const period = step * rows
+    return `${this.rfsFormatTime(step)} (${this.rfsFormatTime(period)} total) ${rra.getCFName()}`
+  },
+
   rfsFormatTime(s) {
     if (s<120) {
       return s+"s";
