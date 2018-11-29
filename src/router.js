@@ -10,12 +10,11 @@ export default new Router({
   routes: [
     {
       path: '/',
-      alias: '/:stackName/:serviceName/:instanceId',
       component: Index
     },
-    // {
-    //   path: '/:stackName/:serviceName/:instanceId',
-    //   component: Test
-    // },
+    {
+      path: '/:stackName/:serviceName/:instanceId',
+      component: Index
+    },
   ]
 })

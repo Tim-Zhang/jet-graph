@@ -42,6 +42,15 @@ export default {
       this.rra = this.rrd.getRRA(this.rraIdx)
       this.dsNames = Array.from(Array(this.rrd.getNrDSs()).keys()).map(i => this.rrd.getDS(i).getName())
     },
+
+    async fetch() {
+      const {stackName, serviceName, instanceId} = this.$route.params
+      if (!stackName || !serviceName || !instanceId) return
+
+      const bf = await helper.fetchRrd(`/${stackName}/${serviceName}/${instanceId}.rrd`)
+      this.rrd = new RRDFile(bf)
+      this.render()
+    },
   },
   async created() {
     const meta = await fetch('/meta.json')
@@ -49,14 +58,13 @@ export default {
     this.stackName = metaJson.Stack
 
     this.services = metaJson.Services.map(service => ({name: service.Name, instances: service.Instances}))
-
-    const bf = await helper.fetchRrd('/docker_stats.rrd')
-    this.rrd = new RRDFile(bf)
-    this.render()
+    this.fetch()
   },
 
   watch: {
+    rrd: 'render',
     rraIdx: 'render',
+    $route: 'fetch'
   },
 
   components: {
