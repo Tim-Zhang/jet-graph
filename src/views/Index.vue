@@ -63,7 +63,7 @@ export default {
     },
 
     async fetchMeta() {
-      const meta = await fetch('http://jiecao.pw/meta.json')
+      const meta = await fetch('/meta.json')
       if (meta.status === 404) {
         return setTimeout(this.fetchMeta, 1500)
       }
