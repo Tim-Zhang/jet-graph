@@ -43,7 +43,7 @@ export default {
       this.dsNames = Array.from(Array(this.rrd.getNrDSs()).keys()).map(i => this.rrd.getDS(i).getName())
     },
 
-    async fetch() {
+    async fetchRrd() {
       const {stackName, serviceName, instanceId} = this.$route.params
       if (!stackName || !serviceName || !instanceId) return
 
@@ -61,20 +61,27 @@ export default {
       this.rrd = new RRDFile(bf)
       this.render()
     },
+
+    async fetchMeta() {
+      const meta = await fetch('http://jiecao.pw/meta.json')
+      if (meta.status === 404) {
+        return setTimeout(this.fetchMeta, 1500)
+      }
+      const metaJson = await meta.json()
+      this.stackName = metaJson.Stack
+
+      this.services = metaJson.Services.map(service => ({name: service.Name, instances: service.Instances}))
+    },
   },
   async created() {
-    const meta = await fetch('/meta.json')
-    const metaJson = await meta.json()
-    this.stackName = metaJson.Stack
-
-    this.services = metaJson.Services.map(service => ({name: service.Name, instances: service.Instances}))
-    this.fetch()
+    await this.fetchMeta()
+    await this.fetchRrd()
   },
 
   watch: {
     rrd: 'render',
     rraIdx: 'render',
-    $route: 'fetch'
+    $route: 'fetchRrd'
   },
 
   components: {
