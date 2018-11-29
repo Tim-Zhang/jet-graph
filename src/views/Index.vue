@@ -47,7 +47,17 @@ export default {
       const {stackName, serviceName, instanceId} = this.$route.params
       if (!stackName || !serviceName || !instanceId) return
 
-      const bf = await helper.fetchRrd(`/${stackName}/${serviceName}/${instanceId}.rrd`)
+      let bf
+      try {
+        bf = await helper.fetchRrd(`/${stackName}/${serviceName}/${instanceId}.rrd`)
+      } catch (e) {
+        // The rrd file may not ready, try reload later
+        if (e.message === '404') {
+          setTimeout(this.fetch, 3000)
+          return
+        }
+        throw e
+      }
       this.rrd = new RRDFile(bf)
       this.render()
     },

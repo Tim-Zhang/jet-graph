@@ -2,8 +2,11 @@ import {FetchBinaryURLAsync} from './binaryXHR'
 
 export default {
   async fetchRrd(url) {
-    return new Promise(resolve => {
-      FetchBinaryURLAsync(url, resolve)
+    return new Promise((resolve, reject) => {
+      FetchBinaryURLAsync(url, (bf, status) => {
+        if (status !== 200) return reject(new Error(status))
+        resolve(bf)
+      })
     })
   },
 
