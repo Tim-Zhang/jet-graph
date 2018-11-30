@@ -57,7 +57,19 @@ export default {
       }
     }
   },
+  filesize(size, factor = 1000 ) {
+    const attrs = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+    let i = 0
+    while (size >= factor) {
+      size = size / factor
+      i++
+    }
 
 
+    const digitLengthString = Math.ceil(size).length
+    let decimalLength = 4 - digitLengthString
+    decimalLength = decimalLength > 0 ? decimalLength : 0
+    return `${Number(size.toFixed(decimalLength))} ${attrs[i]}`
+  },
 
 }
