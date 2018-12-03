@@ -50,7 +50,7 @@ export default {
       let bf
       try {
         bf = await helper.fetchRrd(`/${stackName}/${serviceName}/${instanceId}.rrd`)
-        setTimeout(this.fetchRrd, 30 * 1000) // Update the graph
+        setTimeout(this.fetchRrd, 10 * 1000) // Update the graph
       } catch (e) {
         // The rrd file may not ready, try reload later
         if (e.message === '404') {
