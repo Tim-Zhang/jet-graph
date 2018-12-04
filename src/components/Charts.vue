@@ -9,14 +9,14 @@ import config from '../config'
 const echarts = window.echarts
 
 export default {
-  props: ['rra', 'dsNames', 'lastUpdate', ],
+  props: ['rrdData', 'rraIdx', ],
   data() {
     return {
       charts: {},
+      dsNames: [],
     }
   },
   mounted() {
-    this.initCharts()
     this.renderCharts()
   },
   methods: {
@@ -29,8 +29,8 @@ export default {
       const chart = echarts.init(div)
       this.charts[name] = chart
     },
-    initCharts() {
-      for (let name of this.dsNames) {
+    initCharts(dsNames) {
+      for (let name of dsNames) {
         const dsConf = config.ds[name] || {}
         if (!dsConf.merge) this.initChart(name)
       }
@@ -118,21 +118,26 @@ export default {
     },
 
     renderCharts() {
-      const rraLabel = helper.getRraLabel(this.rra)
-      const nrDSs = this.rra.getNrDSs()
+      const rrd = helper.newRrd(this.rrdData)
+      const rra = rrd.getRRA(this.rraIdx)
+      const lastUpdate = rrd.getLastUpdate()
+      const dsNames = this.dsNames = Array.from(Array(rrd.getNrDSs()).keys()).map(i => rrd.getDS(i).getName())
+
+      if (!Object.keys(this.charts).length) this.initCharts(dsNames)
+
+      const rraLabel = helper.getRraLabel(rra)
+      const nrDSs = rra.getNrDSs()
       const dataset = {}
 
       for (let dsIdx = 0; dsIdx < nrDSs; dsIdx++) {
-        const rra = this.rra
         const rowCount = rra.getNrRows()
-
         const step = rra.getStep()
 
-        const firstElTimestamp = this.lastUpdate - (rowCount - 1) * step
+        const firstElTimestamp = lastUpdate - (rowCount - 1) * step
         let timestamp = firstElTimestamp
 
         const data = []
-        const name = this.dsNames[dsIdx]
+        const name = dsNames[dsIdx]
 
         for (let i = 0; i < rowCount; i++) {
           const el = rra.getEl(i, dsIdx)
@@ -159,19 +164,11 @@ export default {
 
       Object.keys(dataset).forEach(name => this.renderChart({data: dataset[name], name, rraLabel}))
     },
-
-    getDsNameByIdx(idx) {
-      return this.dsNames[idx]
-    },
-
-    getDsConfigByIdx(idx) {
-      const name = this.getDsNameByIdx(idx)
-      return config.ds[name]
-    },
   },
 
   watch: {
-    rra: 'renderCharts'
+    rrdData: 'renderCharts',
+    rraIdx: 'renderCharts',
   }
 }
 

@@ -223,11 +223,11 @@ export function FetchBinaryURLAsync(url, callback, callback_arg) {
        // not IE, do nothing
       }
 
-      var bf=new BinaryFile(response);
+      // var bf=new BinaryFile(response);
       if (callback_arg!=null) {
-        callback(bf, this.status, callback_arg);
+        callback(response, this.status, callback_arg);
       } else {
-        callback(bf, this.status);
+        callback(response, this.status);
       }
     }
   }

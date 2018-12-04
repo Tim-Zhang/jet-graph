@@ -1,4 +1,5 @@
-import {FetchBinaryURLAsync} from './binaryXHR'
+import {FetchBinaryURLAsync, BinaryFile} from './binaryXHR'
+import RRDFile from './RRDFile'
 
 export default {
   async fetchRrd(url) {
@@ -8,6 +9,10 @@ export default {
         resolve(bf)
       })
     })
+  },
+
+  newRrd(rrdData) {
+    return new RRDFile(new BinaryFile(rrdData))
   },
 
   getLocaleTimeString(dateOrTimestamp) {

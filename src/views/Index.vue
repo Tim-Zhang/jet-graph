@@ -1,8 +1,8 @@
 <template>
   <div>
     <ServiceInstanceSel :stackName="stackName" :services="services"></ServiceInstanceSel>
-    <RRASel :rrd="rrd" v-if="rrd" v-model="rraIdx"></RRASel>
-    <Charts v-if="rra" :rra="rra" :dsNames="dsNames" :lastUpdate="lastUpdate"></Charts>
+    <RRASel :rrdData="rrdData" v-if="rrdData" v-model="rraIdx"></RRASel>
+    <Charts v-if="rrdData" :rrdData="rrdData" :rraIdx="rraIdx"></Charts>
     <div v-else>Loading ...</div>
   </div>
 </template>
@@ -16,7 +16,6 @@
 
 
 <script>
-import RRDFile from '../lib/RRDFile'
 import helper  from '../lib/helper'
 
 import RRASel from '../components/RRASel'
@@ -26,30 +25,22 @@ import Charts from '../components/Charts'
 export default {
   data() {
     return {
-      rrd: null,
-      rra: null,
       rraIdx: 0,
       stackName: '',
       services: [],
       dsNames: [],
+      lastUpdate: 0,
+      rrdData: null,
     }
   },
 
   methods: {
-    render() {
-      if (!this.rrd) return
-      this.lastUpdate = this.rrd.getLastUpdate()
-      this.rra = this.rrd.getRRA(this.rraIdx)
-      this.dsNames = Array.from(Array(this.rrd.getNrDSs()).keys()).map(i => this.rrd.getDS(i).getName())
-    },
-
     async fetchRrd() {
       const {stackName, serviceName, instanceId} = this.$route.params
       if (!stackName || !serviceName || !instanceId) return
 
-      let bf
       try {
-        bf = await helper.fetchRrd(`/${stackName}/${serviceName}/${instanceId}.rrd`)
+        this.rrdData = await helper.fetchRrd(`/${stackName}/${serviceName}/${instanceId}.rrd`)
         setTimeout(this.fetchRrd, 10 * 1000) // Update the graph
       } catch (e) {
         // The rrd file may not ready, try reload later
@@ -59,8 +50,6 @@ export default {
         }
         throw e
       }
-      this.rrd = new RRDFile(bf)
-      this.render()
     },
 
     async fetchMeta() {
@@ -80,8 +69,6 @@ export default {
   },
 
   watch: {
-    rrd: 'render',
-    rraIdx: 'render',
     $route: 'fetchRrd'
   },
 

@@ -18,12 +18,13 @@
 import helper from '../lib/helper'
 
 export default {
-  props: ['rrd', 'value'],
+  props: ['rrdData', 'value'],
   computed: {
     labels() {
+      const rrd = helper.newRrd(this.rrdData)
       const lbs = []
-      for (let i = 0; i < this.rrd.getNrRRAs(); i++) {
-        const rra = this.rrd.getRRAInfo(i)
+      for (let i = 0; i < rrd.getNrRRAs(); i++) {
+        const rra = rrd.getRRAInfo(i)
         lbs.push(helper.getRraLabel(rra))
       }
       return lbs
